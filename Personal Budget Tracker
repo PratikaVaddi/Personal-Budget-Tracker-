@@ -1,0 +1,54 @@
+import json
+from datetime import datetime
+
+def load_data():
+    try:
+        with open("budget_data.json", "r") as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return {"income": 0, "expenses": []}
+
+def save_data(data):
+    with open("budget_data.json", "w") as file:
+        json.dump(data, file)
+
+def record_transaction(amount, category, is_income):
+    transaction = {"amount": amount, "category": category, "date": str(datetime.now())}
+    if is_income:
+        data["income"] += amount
+    else:
+        data["expenses"].append(transaction)
+        data["income"] -= amount
+    save_data(data)
+
+def calculate_budget():
+    return data["income"] - sum(item["amount"] for item in data["expenses"])
+
+def analyze_expenses():
+    categories = {}
+    for item in data["expenses"]:
+        category = item["category"]
+        categories[category] = categories.get(category, 0) + item["amount"]
+    return categories
+
+data = load_data()
+
+while True:
+    print("\n1. Record Income\n2. Record Expense\n3. Calculate Budget\n4. Expense Analysis\n5. Exit")
+    choice = input("Enter your choice: ")
+
+    if choice == "1":
+        amount = float(input("Enter income amount: "))
+        record_transaction(amount, "Income", True)
+    elif choice == "2":
+        amount = float(input("Enter expense amount: "))
+        category = input("Enter expense category: ")
+        record_transaction(amount, category, False)
+    elif choice == "3":
+        print("Remaining Budget:", calculate_budget())
+    elif choice == "4":
+        print("Expense Analysis:", analyze_expenses())
+    elif choice == "5":
+        break
+    else:
+        print("Invalid choice. Please try again.")
